@@ -1,0 +1,16 @@
+{
+  "config_file": "configs/GRiT_B_DenseCap.yaml",
+  "resume": true,
+  "eval_only": true,
+  "num_gpus": 1,
+  "num_machines": 1,
+  "machine_rank": 0,
+  "dist_url": "tcp://127.0.0.1:30671",
+  "opts": [
+    "MODEL.WEIGHTS",
+    "output/cat_and_cat/model_final.pth"
+  ],
+  "output_dir_name": "./output/inference/debug",
+  "num_gpus_per_machine": 1,
+  "test_task": ""
+}

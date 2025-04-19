@@ -1,0 +1,13 @@
+{
+  "config_file": "configs/GRiT_B_DenseCap.yaml",
+  "resume": true,
+  "eval_only": false,
+  "num_gpus": 1,
+  "num_machines": 1,
+  "machine_rank": 0,
+  "dist_url": "tcp://127.0.0.1:12348",
+  "opts": [],
+  "output_dir_name": "./output/debug",       
+  "num_gpus_per_machine": 1,
+  "test_task": ""
+}
