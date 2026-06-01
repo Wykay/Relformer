@@ -1,20 +1,27 @@
-# Relformer
+# RelFormer
 
-> Relation-aware dense captioning built on top of [GRiT](https://github.com/JialianW/GRiT).
+> Advancing contextual relations for Transformer-based dense captioning.
+> *Computer Vision and Image Understanding*, 2025.
 
-<!-- TODO: replace with paper/arXiv/project links once available
-**Paper:** [TODO add arXiv link]
-**Project page:** [TODO]
--->
+**Paper:** [CVIU 2025 (Elsevier)](https://www.sciencedirect.com/science/article/pii/S1077314225000232) · [DOI: 10.1016/j.cviu.2025.104300](https://doi.org/10.1016/j.cviu.2025.104300)
 
-Relformer extends GRiT (Generative Regional Transformer, Microsoft 2022) with relation modeling between detected regions, enabling dense captioning that conditions each region's caption on its visual context. The detection backbone follows GRiT (CenterNet2 proposals over a ViT-FPN), the text decoder follows mPLUG, and a CLIP ViT-B/16 branch supplies global visual context.
+Dense captioning detects regions in an image and generates a natural-language description for each. Accurate descriptions depend on **contextual modeling** between regions, but prior work models only object-vs-object relations and ignores "stuff" (sky, rivers, grass, …). RelFormer adds three pieces on top of a Transformer-based dense-captioning pipeline:
 
-> **Status.** Research code, work in progress. Trained checkpoints and full reproduction recipes are not yet released. APIs and configs may change.
+1. **CLIP-assisted region feature extraction** that produces rich contextual features for both *thing* and *stuff* regions.
+2. **A self-attention relation encoder** that models pairwise interactions across all regional features.
+3. **Amplified-decay NMS (AD-NMS)** that suppresses redundant proposals more aggressively while preserving small regions detected at low confidence thresholds.
+
+On dense captioning, RelFormer reaches **17.52% mAP on VG V1.0**, **16.59% on VG V1.2**, and **15.49% on VG-COCO**.
+
+The code is built on top of [GRiT](https://github.com/JialianW/GRiT) (Generative Regional Transformer, Microsoft 2022): CenterNet2 proposals over a ViT-FPN backbone with an mPLUG text decoder.
+
+> **Status.** Research code released alongside the CVIU 2025 paper. Trained checkpoints and full reproduction recipes are not yet uploaded — coming soon.
 
 ## Highlights
 
-- **Region-relation ROI head** (`CatAndCat` in `grit/modeling/roi_heads/clip_obj_relation_roi_heads.py`) fuses per-region features with cross-region attention before captioning.
-- **CLIP-conditioned meta-arch** (`GRiT_w_CLIP`) injects CLIP ViT-B/16 features alongside the detection backbone.
+- **CLIP-assisted region feature extraction** — `GRiT_w_CLIP` (`grit/modeling/meta_arch/clip_meta_arch.py`) augments the ViT-FPN backbone with CLIP ViT-B/16 features so both *thing* and *stuff* regions get rich context.
+- **Self-attention relation encoder** in the `CatAndCat` ROI head (`grit/modeling/roi_heads/clip_obj_relation_roi_heads.py`) explicitly models pairwise relations between regions before captioning.
+- **Amplified-decay NMS (AD-NMS)** for proposal filtering — see `grit/modeling/soft_nms.py`.
 - **DeepSpeed ZeRO-1 trainer** with a hand-rolled training loop, custom ViT layer-wise LR decay, and multi-node launch helper.
 - **Multi-dataset registry**: Visual Genome (`vg`, `vg_2`), VG+COCO joint splits (`vg_coco`), GRiT-COCO, and Object365 are all wired in via `grit/data/datasets/`.
 
@@ -219,24 +226,29 @@ This project is released under the MIT License (see [LICENSE](LICENSE)). It inhe
 
 ## Citation
 
-<!-- TODO: fill in once the paper is on arXiv. -->
+If you find this work useful, please cite:
 
 ```bibtex
-@misc{relformer,
-  title  = {Relformer: Relation-aware Dense Captioning},
-  author = {TODO},
-  year   = {TODO},
-  note   = {TODO arXiv link}
+@article{JIN2025104300,
+  title   = {RelFormer: Advancing contextual relations for transformer-based dense captioning},
+  author  = {Weiqi Jin and Mengxue Qu and Caijuan Shi and Yao Zhao and Yunchao Wei},
+  journal = {Computer Vision and Image Understanding},
+  volume  = {252},
+  pages   = {104300},
+  year    = {2025},
+  issn    = {1077-3142},
+  doi     = {10.1016/j.cviu.2025.104300},
+  url     = {https://www.sciencedirect.com/science/article/pii/S1077314225000232}
 }
 ```
 
-If you use this codebase, please also cite the upstream GRiT work:
+Please also cite the upstream GRiT work this codebase is built on:
 
 ```bibtex
 @article{wu2022grit,
-  title  = {GRiT: A Generative Region-to-text Transformer for Object Understanding},
-  author = {Wu, Jialian and Wang, Jianfeng and Yang, Zhengyuan and Gan, Zhe and Liu, Zicheng and Yuan, Junsong and Wang, Lijuan},
+  title   = {GRiT: A Generative Region-to-text Transformer for Object Understanding},
+  author  = {Wu, Jialian and Wang, Jianfeng and Yang, Zhengyuan and Gan, Zhe and Liu, Zicheng and Yuan, Junsong and Wang, Lijuan},
   journal = {arXiv preprint arXiv:2212.00280},
-  year   = {2022}
+  year    = {2022}
 }
 ```
