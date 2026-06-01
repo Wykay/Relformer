@@ -49,7 +49,7 @@ from grit.custom_solver import build_custom_optimizer
 
 from grit.evaluation.eval import GRiTCOCOEvaluator, GRiTVGEvaluator
 import deepspeed
-from lauch_deepspeed import launch_deepspeed, launch_deepspeed_multinodes
+from launch_deepspeed import launch_deepspeed, launch_deepspeed_multinodes
 
 
 
@@ -267,13 +267,19 @@ def main(args):
 
 
 if __name__ == "__main__":
-    args = default_argument_parser()
-    args = args.parse_args()
-    with open('/opt/data/private/jwq/model_densecap/training_args.txt','r') as f:
-        args.__dict__=json.load(f)
-        args.dist_url = 'tcp://127.0.0.1:{}'.format(
-            torch.randint(11111, 60000, (1,))[0].item())
-        
+    parser = default_argument_parser()
+    parser.add_argument(
+        "--args-file",
+        default=os.path.join(os.path.dirname(os.path.abspath(__file__)), "training_args.txt"),
+        help="JSON file whose contents replace argparse args (legacy GRiT convention).",
+    )
+    args = parser.parse_args()
+    with open(args.args_file, "r") as f:
+        args.__dict__ = json.load(f)
+    args.dist_url = "tcp://127.0.0.1:{}".format(
+        torch.randint(11111, 60000, (1,))[0].item()
+    )
+
     if args.num_machines == 1:
         print("Command Line Args:", args)
         launch_deepspeed(

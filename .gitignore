@@ -1,0 +1,44 @@
+# Byte-compiled / optimized
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+*.egg
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+
+# Editor / IDE
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Project artifacts
+output/
+outputs/
+checkpoints/
+runs/
+wandb/
+lightning_logs/
+events.out.tfevents.*
+*.log
+
+# Datasets (must be symlinked or mounted; never commit)
+datasets/
+
+# DeepSpeed
+.deepspeed_env
+
+# Local args overrides — keep the templates in the repo, ignore user copies
+training_args.local.txt
+inference_args.local.txt

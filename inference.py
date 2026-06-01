@@ -119,11 +119,16 @@ def main(args):
 
 
 if __name__ == "__main__":
-    args = default_argument_parser()
-    args = args.parse_args()
+    parser = default_argument_parser()
+    parser.add_argument(
+        "--args-file",
+        default=os.path.join(os.path.dirname(os.path.abspath(__file__)), "inference_args.txt"),
+        help="JSON file whose contents replace argparse args (legacy GRiT convention).",
+    )
+    args = parser.parse_args()
 
-    with open('/opt/data/private/jwq/model_densecap/inference_args.txt','r') as f:
-        args.__dict__=json.load(f)
+    with open(args.args_file, "r") as f:
+        args.__dict__ = json.load(f)
 
     if args.num_machines == 1:
         args.dist_url = 'tcp://127.0.0.1:{}'.format(
@@ -131,7 +136,7 @@ if __name__ == "__main__":
     else:
         raise NotImplementedError('Use train_deepspeed.py for multi-node training')
     print("Command Line Args:", args)
-    
+
     launch(
     main,
     args.num_gpus_per_machine,
